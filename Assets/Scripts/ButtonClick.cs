@@ -61,7 +61,6 @@ public class ButtonClick : MonoBehaviour, IPointerUpHandler
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         

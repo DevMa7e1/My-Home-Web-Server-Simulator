@@ -3,7 +3,6 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -120,7 +119,7 @@ public class GameManager : MonoBehaviour
         CheckOverload();
     }
 
-    void CheckOverload()
+    public void CheckOverload()
     {
         if(maxVisitorsPerSecond < visitorsPerSecond)
         {
@@ -144,7 +143,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void showMessageBox(string text)
+    public void showMessageBox(string text)
     {
         MsgPanel.SetActive(true);
         MsgText.text = text;

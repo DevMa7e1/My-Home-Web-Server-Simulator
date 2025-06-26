@@ -21,9 +21,7 @@ public class ButtonEnter : MonoBehaviour, IPointerEnterHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log($"Pointer entered: {gameObject.name} (Type: {myButtonType})");
 
-        // Perform actions specific to each button type when hovered
         switch (myButtonType)
         {
             case ButtonType.ButtonA:
@@ -60,7 +58,6 @@ public class ButtonEnter : MonoBehaviour, IPointerEnterHandler
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
