@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    public RectTransform Canvas;
+
     public double visitorsPerSecond = 0.0;
     public double maxVisitorsPerSecond = 0.0;
 
@@ -20,23 +22,30 @@ public class GameManager : MonoBehaviour
     private int[] maxes = { 5, 15, 20, 50, 100, 200, 450, 1000 };
     private int[] prices = { 15, 35, 40, 70, 170, 300, 500, 900 };
 
-    private string[] upgrades = { "Write new content!",
+    private string[] upgrades = { "Index your website on search engines!",
+                                  "Write new content!",
                                   "Get an HTTPS certificate!",
                                   "Make posts on social media!",
-                                  "Start posting tutorials!"};
-    private string[] upgMessg = { "New content will bring new visitors.",
-                                  "It is free, greatly improves security and helps a lot with SEO.",
+                                  "Start posting tutorials!",
+                                  "Write about new topics!",
+                                  "Explore recent events!",
+                                  "Post about a debated subject!"};
+    private string[] upgMessg = { "Search engines do not tipically pick up on new websites imediately. To make a search engine index your site, post a link on some other, already indexed site (like social media).",
+                                  "New content will bring new visitors.",
+                                  "An HTTPS certificate is free, greatly improves security and helps a lot with SEO.",
                                   "With social media, you can attract many new people to your website without needing investing in ads.", 
-                                  "Most of the time, tutorials can stay relevant for longer periods of time compared to articles."};
-    private int[] upgPrices = { 5, 0, 10, 5};
-    private int[] upgGains = { 10, 20, 15, 10};
+                                  "Most of the time, tutorials can stay relevant for longer periods of time compared to articles.",
+                                  "New topics bring a new group of people that may have not been interested in your blog before.",
+                                  "Recent events will usually bring a temporary, but big boost in visitors.",
+                                  "Debated subjects will usually bring a large group of people to your site. Just make sure that you do a lot of research before to not acidentally spread missinformation!"};
+    private int[] upgPrices = { 1,  5,  0, 10,  5, 15, 20, 30};
+    private int[] upgGains =  { 4, 10, 20, 15, 10, 25, 30, 50};
 
     public int currentUpgIndx = 0;
 
     public List<int> DeviceIndexes = new();
 
     public TMP_Text MoneyText;
-    public TMP_Text DevicesText;
 
     public Button b0;
     public Button b1;
@@ -56,6 +65,11 @@ public class GameManager : MonoBehaviour
     public GameObject MsgPanel;
     public Button AnOkButton;
     public TMP_Text MsgText;
+
+    public GameObject devicePrefab;
+    public Sprite[] deviceSprites;
+
+    public GameObject AdPanel;
 
     void displayButtons(double money, List<Button> buttons)
     {
@@ -112,9 +126,38 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
     }
+    List<GameObject> spawnedImages = new List<GameObject>();
+    public void drawDevices()
+    {
+        foreach (GameObject imgGO in spawnedImages)
+        {
+            if (imgGO != null) // Check if the object still exists before destroying
+            {
+                Destroy(imgGO);
+            }
+        }
+        spawnedImages.Clear();
+        Vector3[] worldCorners = new Vector3[4];
+        Canvas.GetWorldCorners(worldCorners);
+        float minX = worldCorners[0].x;
+        float maxX = worldCorners[2].x;
+        float minY = worldCorners[0].y;
+        float maxY = worldCorners[2].y;
+        foreach (int device in DeviceIndexes)
+        {
+            int x = Random.Range((int)minX, (int)maxX);
+            int y = Random.Range((int)minY, (int)maxY);
+            GameObject uiObject = Instantiate(devicePrefab, Canvas);
+            uiObject.transform.position = new Vector3(x, y, 0);
+            uiObject.name = "device_img";
+            Image imgComponent = uiObject.GetComponent<Image>();
+            imgComponent.sprite = deviceSprites[device];
+            spawnedImages.Add(uiObject);
+        }
+    }
     public void UpdateDevices()
     {
-        DevicesText.text = "Devices: " + GetHumanReadableDeivceNames(DeviceIndexes, names);
+        drawDevices();
         maxVisitorsPerSecond = CalcMaxVPS(DeviceIndexes, maxes);
         CheckOverload();
     }
@@ -132,6 +175,7 @@ public class GameManager : MonoBehaviour
     }
     void UpgradeButtonTask()
     {
+        
         if (upgPrices[currentUpgIndx] <= currentRevenue)
         {
             visitorsPerSecond += upgGains[currentUpgIndx];
@@ -139,8 +183,23 @@ public class GameManager : MonoBehaviour
             currentRevenue -= upgPrices[currentUpgIndx];
             CheckOverload();
             currentUpgIndx++;
-            UpdateUpgrade();
+            if(currentUpgIndx-1 >= upgrades.Count()-1)
+            {
+                UpgradeButton.onClick.RemoveAllListeners();
+                UpgradeText.text = "There are no more upgrades!";
+            }
+            else
+                UpdateUpgrade();
         }
+    }
+    public double CalculateUpgradeEffectCombined()
+    {
+        double upgEffCmbnd = 0;
+        for(int i = 0; i < currentUpgIndx; i++)
+        {
+            upgEffCmbnd += upgGains[i];
+        }
+        return upgEffCmbnd + 1;
     }
 
     public void showMessageBox(string text)
@@ -157,6 +216,7 @@ public class GameManager : MonoBehaviour
     {
         UpgradeButton.onClick.AddListener(UpgradeButtonTask);
         AnOkButton.onClick.AddListener(hideMessageBox);
+        AdPanel.SetActive(false);
         hideMessageBox();
         UpdateDevices();
         UpdateUpgrade();
@@ -168,15 +228,25 @@ public class GameManager : MonoBehaviour
         buttons.Add(b5);
         buttons.Add(b6);
         buttons.Add(b7);
-        //--Example values--
-        //--Remove later!!--
-        visitorsPerSecond = 5f;
+        //Sike!
+        visitorsPerSecond = 1f;
         DeviceIndexes.Add(0);
         UpdateDevices();
     }
 
+    public bool doIt = false;
+
     void Update()
     {
+        if (doIt)
+        {
+            drawDevices();
+            doIt = false;
+        }
+        if (currentRevenue >= 10000)
+        {
+            AdPanel.SetActive(true);
+        }
         double effectiveVisitors = System.Math.Min(visitorsPerSecond, maxVisitorsPerSecond);
         currentRevenue += effectiveVisitors * adRevenuePerVisitor * Time.deltaTime;
         if(visitorsPerSecond <= 20)

@@ -55,10 +55,6 @@ public class AdsScript : MonoBehaviour
         if (GameManager.Instance.currentRevenue >= 10 * Math.Pow(2, adNo))
         {
             adEffectSeconds += 61;
-            if(adNo == 0 && !EventManager.Instance.eventInAction)
-                beforeVPS = GameManager.Instance.visitorsPerSecond;
-            else if(EventManager.Instance.eventInAction)
-                beforeVPS = EventManager.Instance.BeforeVPS;
             GameManager.Instance.visitorsPerSecond += Math.Ceiling(GameManager.Instance.maxVisitorsPerSecond / (2*(adNo+1)));
             GameManager.Instance.currentRevenue -= 10 * Math.Pow(2,adNo);
             adNo++;
@@ -80,7 +76,7 @@ public class AdsScript : MonoBehaviour
         if (adEffectSeconds <= 0 && adsInAction)
         {
             adNo = 0;
-            GameManager.Instance.visitorsPerSecond = beforeVPS;
+            GameManager.Instance.visitorsPerSecond = GameManager.Instance.CalculateUpgradeEffectCombined();
             UpdatePrice();
             GameManager.Instance.CheckOverload();
             adsInAction = false;
