@@ -45,18 +45,22 @@ public class AdsScript : MonoBehaviour
         }
     }
 
+    double getAdPrice()
+    {
+        return 1000 * Math.Pow(2, adNo);
+    }
     void UpdatePrice()
     {
-        AdBtnText.text = "Buy ads! Price: " + 10*Math.Pow(2, adNo);
+        AdBtnText.text = "Buy ads! Price: " + getAdPrice();
     }
 
     void Click()
     {
-        if (GameManager.Instance.currentRevenue >= 10 * Math.Pow(2, adNo))
+        if (GameManager.Instance.currentRevenue >= getAdPrice())
         {
             adEffectSeconds += 61;
             GameManager.Instance.visitorsPerSecond += Math.Ceiling(GameManager.Instance.maxVisitorsPerSecond / (2*(adNo+1)));
-            GameManager.Instance.currentRevenue -= 10 * Math.Pow(2,adNo);
+            GameManager.Instance.currentRevenue -= getAdPrice();
             adNo++;
             UpdatePrice();
             adsInAction = true;

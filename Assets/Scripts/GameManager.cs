@@ -38,8 +38,8 @@ public class GameManager : MonoBehaviour
                                   "New topics bring a new group of people that may have not been interested in your blog before.",
                                   "Recent events will usually bring a temporary, but big boost in visitors.",
                                   "Debated subjects will usually bring a large group of people to your site. Just make sure that you do a lot of research before to not acidentally spread missinformation!"};
-    private int[] upgPrices = { 1,  5,  0, 10,  5, 15, 20, 30};
-    private int[] upgGains =  { 4, 10, 20, 15, 10, 25, 30, 50};
+    private int[] upgPrices = { 1,  5,  0, 50,  200, 800, 1500, 3000};
+    private int[] upgGains =  { 4, 10, 20, 30,   70, 130,  250, 1000};
 
     public int currentUpgIndx = 0;
 
