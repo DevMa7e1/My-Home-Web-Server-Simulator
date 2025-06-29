@@ -9,8 +9,7 @@ public class PanelFadeOut : MonoBehaviour
     public TMP_Text WelText;
     public GameObject MainPanel;
 
-    [Range(0.1f, 10.0f)]
-    public float fadeDuration = 2.0f;
+    public float fadeDuration = 10.0f;
 
     void Start()
     {
