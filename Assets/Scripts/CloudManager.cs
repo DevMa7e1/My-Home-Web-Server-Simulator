@@ -36,6 +36,24 @@ public class CloudManager : MonoBehaviour
 
     bool canMakeMoney = true;
 
+    string[] upgrades = {"Diversify your content!", "Allow for users to create their own content!", "Make a site-wide forum!",
+        "Hire moderators and other people to take care of the website!", "Sponsor other people's blogs and content!"};
+    string[] upgMessg = {"By diversifing your content you can reach a wider audience.",
+        "Allowing users to create their own content means that the site now basically runs itself and official new content is not necessary anymore",
+        "By making a site wide forum, you can take advantage of the fact that old problems repeat and that forums are generally preferred for discussing problems compared to an article.",
+        "Hireing moderators can greately improve a websites reputation and help clean out the posts that offer no value to the site.",
+        "By sponsoring other people's content you are reserving, usually, a permanent ad in content that may be viewed thousands or millions of times."};
+    int[] upgCosts = { 10000, 100000, 500000, 900000, 1500000};
+    int[] upgGains = { 100000, 300000, 700000, 1000000, 2500000};
+    int upgIndex = 0;
+    int upgGainsTotal = 0;
+    public Button upgButton;
+    public TMP_Text upgText;
+
+    public GameObject messageBox;
+    public TMP_Text messageText;
+    public Button messageButton;
+
     void Start()
     {
         AdButton.onClick.AddListener(AdButtonAction);
@@ -44,6 +62,33 @@ public class CloudManager : MonoBehaviour
         timeTillNextIssue = UnityEngine.Random.Range(10, 30) + 10;
         FixButton.gameObject.SetActive(false);
         Loading.SetActive(false);
+        upgButton.onClick.AddListener(UpgradeButtonAction);
+        messageBox.SetActive(false);
+        messageButton.onClick.AddListener(messageBoxHide);
+        upgText.text = upgrades[upgIndex] + "\nCost: " + upgCosts[upgIndex].ToString() + "\nGain: " + upgGains[upgIndex].ToString() + " visitors per second";
+    }
+
+    void messageBoxShow(string text)
+    {
+        messageBox.SetActive(true);
+        messageText.text = text;
+    }
+    void messageBoxHide()
+    {
+        messageBox.SetActive(false);
+    }
+
+    void UpgradeButtonAction()
+    {
+        if(currentRevenue >= upgCosts[upgIndex])
+        {
+            upgGainsTotal += upgGains[upgIndex];
+            visitorsPerSecond += upgGains[upgIndex];
+            currentRevenue -= upgCosts[upgIndex];
+            messageBoxShow(upgMessg[upgIndex]);
+            upgIndex++;
+            upgText.text = upgrades[upgIndex] + "\nCost: " + upgCosts[upgIndex].ToString() + "\nGain: " + upgGains[upgIndex].ToString() + " visitors per second";
+        }
     }
 
     double FloorIfNotZero(double no)
@@ -75,6 +120,7 @@ public class CloudManager : MonoBehaviour
         visitorsPerSecond = 0;
         adButtonClickIndex = 0;
         AdText.text = "Buy ads! Price: " + Math.Pow(2, adButtonClickIndex) * 10000 * FloorIfNotZero(currentRevenue);
+        visitorsPerSecond = upgGainsTotal;
     }
 
     public string padTimeString(string timeString)
