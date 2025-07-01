@@ -2,8 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using System.Threading;
-using UnityEditorInternal;
+using UnityEngine.SceneManagement;
 
 public class CloudManager : MonoBehaviour
 {
@@ -164,5 +163,9 @@ public class CloudManager : MonoBehaviour
         MoneyText.text = "Money: " + currentRevenue.ToString("F0");
         VPSText.text = "Visitors per second: " + visitorsPerSecond.ToString();
         CBText.text = "Cloud bill: " + cloudBill.ToString("F0");
+        if(currentRevenue >= 1000000000)
+        {
+            SceneManager.LoadScene("FinishScene");
+        }
     }
 }

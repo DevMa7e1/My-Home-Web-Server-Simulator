@@ -3,6 +3,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -254,5 +255,9 @@ public class GameManager : MonoBehaviour
         else
             MoneyText.text = "Money: " + currentRevenue.ToString("F0");
         displayButtons(currentRevenue, buttons);
+        if(currentRevenue >= 1000000)
+        {
+            SceneManager.LoadScene("CloudScene");
+        }
     }
 }
