@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Unity.Mathematics.Geometry;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,14 +33,14 @@ public class GameManager : MonoBehaviour
                                   "Write about new topics!",
                                   "Explore recent events!",
                                   "Post about a debated subject!"};
-    private string[] upgMessg = { "Search engines do not tipically pick up on new websites imediately. To make a search engine index your site, post a link on some other, already indexed site (like social media).",
+    private string[] upgMessg = { "Search engines do not typically pick up on new websites immediately. To make a search engine index your site, post a link on some other, already indexed site (like social media).",
                                   "New content will bring new visitors.",
-                                  "An HTTPS certificate is free, greatly improves security and helps a lot with SEO.",
-                                  "With social media, you can attract many new people to your website without needing investing in ads.", 
+                                  "An HTTPS certificate is free, greatly improves security, and helps a lot with SEO.",
+                                  "With social media, you can attract many new people to your website without needing to invest in ads.", 
                                   "Most of the time, tutorials can stay relevant for longer periods of time compared to articles.",
-                                  "New topics bring a new group of people that may have not been interested in your blog before.",
-                                  "Recent events will usually bring a temporary, but big boost in visitors.",
-                                  "Debated subjects will usually bring a large group of people to your site. Just make sure that you do a lot of research before to not acidentally spread missinformation!"};
+                                  "New topics bring a new group of people that may not have been interested in your blog before.",
+                                  "Recent events will usually bring a temporary but big boost in visitors.",
+                                  "Debated subjects will usually bring a large group of people to your site. Just make sure that you do a lot of research before to not accidentally spread misinformation!"};
     private int[] upgPrices = { 1,  5,  0, 50,  200, 800, 1500, 3000};
     private int[] upgGains =  { 4, 10, 20, 30,   70, 130,  250, 1000};
 
@@ -71,6 +73,8 @@ public class GameManager : MonoBehaviour
     public Sprite[] deviceSprites;
 
     public GameObject AdPanel;
+
+    int textTip = 0;
 
     void displayButtons(double money, List<Button> buttons)
     {
@@ -146,8 +150,8 @@ public class GameManager : MonoBehaviour
         float maxY = worldCorners[2].y;
         foreach (int device in DeviceIndexes)
         {
-            int x = Random.Range((int)minX, (int)maxX);
-            int y = Random.Range((int)minY, (int)maxY);
+            int x = UnityEngine.Random.Range((int)minX, (int)maxX);
+            int y = UnityEngine.Random.Range((int)minY, (int)maxY);
             GameObject uiObject = Instantiate(devicePrefab, Canvas);
             uiObject.transform.position = new Vector3(x, y, 0);
             uiObject.name = "device_img";
@@ -205,6 +209,8 @@ public class GameManager : MonoBehaviour
 
     public void showMessageBox(string text)
     {
+        AudioSource audio = gameObject.GetComponent<AudioSource>();
+        audio.Play();
         MsgPanel.SetActive(true);
         MsgText.text = text;
     }
@@ -233,12 +239,65 @@ public class GameManager : MonoBehaviour
         visitorsPerSecond = 1f;
         DeviceIndexes.Add(0);
         UpdateDevices();
+        showMessageBox("Welcome to My Home Web Server Simulator!");
     }
 
     public bool doIt = false;
 
     void Update()
     {
+        switch(System.Math.Floor(currentRevenue*10))
+        {
+            case 2:
+                if (textTip == 0)
+                {
+                    showMessageBox("Let's wait a little...");
+                    textTip++;
+                }
+                break;
+            case 10:
+                if (textTip == 1) {
+                    showMessageBox("Do that upgrade on the right side of the screen!");
+                    textTip++;
+                }
+                break;
+            case 50:
+                if (textTip == 2)
+                {
+                    showMessageBox("Do the next upgrade for 5 money!");
+                    textTip++;
+                }
+                break;
+            case 30:
+                if(textTip == 3)
+                {
+                    showMessageBox("Now wait until you have enough money for a new device!");
+                    textTip++;
+                }
+                break;
+            case 150:
+                if (textTip == 4)
+                {
+                    showMessageBox("Buy a new ESP-01 from the button below! More devices will appear as you gain more money.");
+                    textTip++;
+                }
+                break;
+            case 70:
+                if(textTip == 5)
+                {
+                    showMessageBox("From now on, it's simple! Get more upgardes, buy more devices! Your goal is to reach 1 million money.");
+                    textTip++;
+                }
+                break;
+            case 100000:
+                if (textTip == 6)
+                {
+                    showMessageBox("For a big, temporary boost in visitors, buy some ads!");
+                    textTip++;
+                }
+                break;
+        }
+        
         if (doIt)
         {
             drawDevices();
@@ -250,7 +309,7 @@ public class GameManager : MonoBehaviour
         }
         double effectiveVisitors = System.Math.Min(visitorsPerSecond, maxVisitorsPerSecond);
         currentRevenue += effectiveVisitors * adRevenuePerVisitor * Time.deltaTime;
-        if(visitorsPerSecond <= 20)
+        if (visitorsPerSecond <= 20)
             MoneyText.text = "Money: " + currentRevenue.ToString("F2");
         else
             MoneyText.text = "Money: " + currentRevenue.ToString("F0");

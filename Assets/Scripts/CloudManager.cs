@@ -37,11 +37,11 @@ public class CloudManager : MonoBehaviour
 
     string[] upgrades = {"Diversify your content!", "Allow for users to create their own content!", "Make a site-wide forum!",
         "Hire moderators and other people to take care of the website!", "Sponsor other people's blogs and content!"};
-    string[] upgMessg = {"By diversifing your content you can reach a wider audience.",
-        "Allowing users to create their own content means that the site now basically runs itself and official new content is not necessary anymore",
-        "By making a site wide forum, you can take advantage of the fact that old problems repeat and that forums are generally preferred for discussing problems compared to an article.",
-        "Hireing moderators can greately improve a websites reputation and help clean out the posts that offer no value to the site.",
-        "By sponsoring other people's content you are reserving, usually, a permanent ad in content that may be viewed thousands or millions of times."};
+    string[] upgMessg = {"By diversifying your content, you can reach a wider audience.",
+        "Allowing users to create their own content means that the site now basically runs itself, and official new content is not necessary anymore.",
+        "By making a site-wide forum, you can take advantage of the fact that old problems repeat and that forums are generally preferred for discussing problems compared to an article.",
+        "Hiring moderators can greatly improve a website's reputation and help clean out the posts that offer no value to the site.",
+        "By sponsoring other people's content, you are reserving, usually, a permanent ad in content that may be viewed thousands or millions of times."};
     int[] upgCosts = { 10000, 100000, 500000, 900000, 1500000};
     int[] upgGains = { 100000, 300000, 700000, 1000000, 2500000};
     int upgIndex = 0;
@@ -52,6 +52,12 @@ public class CloudManager : MonoBehaviour
     public GameObject messageBox;
     public TMP_Text messageText;
     public Button messageButton;
+
+    int textTip = 0;
+
+    public AudioClip ding;
+
+    public GameObject MainPanel;
 
     void Start()
     {
@@ -69,6 +75,8 @@ public class CloudManager : MonoBehaviour
 
     void messageBoxShow(string text)
     {
+        AudioSource audio = gameObject.GetComponent<AudioSource>();
+        audio.Play();
         messageBox.SetActive(true);
         messageText.text = text;
     }
@@ -145,6 +153,21 @@ public class CloudManager : MonoBehaviour
 
     void Update()
     {
+        switch (Math.Floor(currentRevenue/100000))
+        {
+            case 11:
+                if (textTip == 1)
+                {
+                    messageBoxShow("Your final goal is to get to one billion money!");
+                    textTip++;
+                }
+                break;
+        }
+        if (cloudTimer >= 10 && textTip == 0)
+        {
+            messageBoxShow("This is the cloud! You can start by getting the upgrade or by buying ads! Your cloud bill is based on load. More visitors = bigger cost. You can manually pay your bill or let the timer run out.");
+            textTip++;
+        }
         if(canMakeMoney) cloudTimer += Time.deltaTime;
         fixTimer += Time.deltaTime;
         if (fixInProgress) issueTimer += Time.deltaTime;
